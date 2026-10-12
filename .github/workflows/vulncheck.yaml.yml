@@ -1,4 +1,4 @@
-﻿name: govulncheck
+﻿name: 'Vulnerability Check'
 
 # Dependabot cannot bump the Go toolchain (dependabot/dependabot-core#9057), and
 # 44 of the 47 vulnerabilities reachable from the v2.21.4 release binary were in
