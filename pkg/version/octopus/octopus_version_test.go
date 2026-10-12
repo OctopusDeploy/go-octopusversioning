@@ -3,6 +3,8 @@
 import (
 	"fmt"
 	"testing"
+
+	"github.com/OctopusDeploy/go-octopusversioning/pkg/version"
 )
 
 type VersionTest struct {
@@ -86,8 +88,8 @@ func TestPrereleaseRules(t *testing.T) {
 
 func TestVersionsWithEquivalentChars(t *testing.T) {
 	tests := []VersionTest{
-		{"1.1.1-prerelease_-.\\", "1.1.1-prerelease\\.-_", 0},
-		{"1.1.1-\\_.10", "1.1.1._\\.11", -1},
+		{`1.1.1-prerelease_-.\`, `1.1.1-prerelease\.-_`, 0},
+		{`1.1.1-\_.10`, `1.1.1._\.11`, -1},
 	}
 
 	runTests(t, tests)
@@ -116,7 +118,10 @@ func runTests(t *testing.T, tests []VersionTest) {
 				t.Fatalf("ParseOctopusVersion(%q) failed: %v", tt.v2, err)
 			}
 
-			result := parsedV1.CompareTo(parsedV2)
+			result, err := version.Compare(parsedV1, parsedV2)
+			if err != nil {
+				t.Fatalf("Compare failed: %v", err)
+			}
 
 			if result != tt.expectedResult {
 				t.Errorf("CompareTo(%q, %q) = %d, want %d", tt.v1, tt.v2, result, tt.expectedResult)

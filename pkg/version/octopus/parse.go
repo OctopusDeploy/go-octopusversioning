@@ -17,25 +17,30 @@ const (
 	groupPrerelease        string = "prerelease"
 	groupPrereleasePrefix  string = "prerelease_prefix"
 	groupPrereleaseCounter string = "prerelease_counter"
-	groupMetadata          string = "buildMetadata"
+	groupMetadata          string = "build_metadata"
 )
 
 var expression = regexp.MustCompile(
-	"^\\s*(?:" +
+	`^\s*(?:` +
 		// Versions can start with an optional V
-		fmt.Sprintf("\\s*(?<%s>v|V)?", groupPrefix) +
+		fmt.Sprintf(`\s*(?<%s>v|V)?`, groupPrefix) +
 		// Get the major version number
-		fmt.Sprintf("\\s*(?<%s>\\d+)\\s*", groupMajor) +
+		fmt.Sprintf(`\s*(?<%s>\d+)\s*`, groupMajor) +
 		// Get the minor version number, delimited by a period, comma, dash or underscore
-		fmt.Sprintf("(?:\\.\\s*(?<%s>\\d+)\\s*)?", groupMinor) +
+		fmt.Sprintf(`(?:\.\s*(?<%s>\d+)\s*)?`, groupMinor) +
 		// Get the patch version number, delimited by a period, comma, dash or underscore
-		fmt.Sprintf("(?:\\.\\s*(?<%s>\\d+)\\s*)?", groupPatch) +
+		fmt.Sprintf(`(?:\.\s*(?<%s>\d+)\s*)?`, groupPatch) +
 		// Get the revision version number, delimited by a period, comma, dash or underscore
-		fmt.Sprintf("(?:\\.\\s*(?<%s>\\d+)\\s*)?)?", groupRevision) +
+		fmt.Sprintf(`(?:\.\s*(?<%s>\d+)\s*)?)?`, groupRevision) +
 		// Everything after the last digit and before the plus is the prerelease
-		fmt.Sprintf("(?:[.\\-_\\\\])?(?<%s>(?<%s>[A-Za-z0-9]*?)([.\\-_\\\\](?<%s>[A-Za-z0-9.\\-_\\\\]*?)?)?)?", groupPrerelease, groupPrereleasePrefix, groupPrereleaseCounter) +
+		fmt.Sprintf(
+			`(?:[.\-_\\])?(?<%s>(?<%s>[A-Za-z0-9]*?)([.\-_\\](?<%s>[A-Za-z0-9.\-_\\]*?)?)?)?`,
+			groupPrerelease,
+			groupPrereleasePrefix,
+			groupPrereleaseCounter,
+		) +
 		// The metadata is everything after the plus
-		fmt.Sprintf("(?:\\+(?<%s>[A-Za-z0-9_\\-.\\\\+]*?))?\\s*$", groupMetadata),
+		fmt.Sprintf(`(?:\+(?<%s>[A-Za-z0-9_\-.\\+]*?))?\s*$`, groupMetadata),
 )
 
 func ParseOctopusVersion(value string) (*OctopusVersion, error) {

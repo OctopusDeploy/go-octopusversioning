@@ -2,9 +2,12 @@
 
 import (
 	"cmp"
-	"go-octopusversioning/pkg/version/util"
+	"fmt"
 	"strconv"
 	"strings"
+
+	"github.com/OctopusDeploy/go-octopusversioning/pkg/version"
+	utils "github.com/OctopusDeploy/go-octopusversioning/pkg/version/util"
 )
 
 type OctopusVersion struct {
@@ -30,7 +33,8 @@ func NewOctopusVersion(
 	releasePrefix string,
 	releaseCounter string,
 	metadata string,
-	originalString string) *OctopusVersion {
+	originalString string,
+) *OctopusVersion {
 	return &OctopusVersion{
 		Prefix:         prefix,
 		Major:          major,
@@ -45,32 +49,41 @@ func NewOctopusVersion(
 	}
 }
 
-func (o OctopusVersion) CompareTo(version *OctopusVersion) int {
-	if majorCmp := cmp.Compare(o.Major, version.Major); majorCmp != 0 {
+func (o *OctopusVersion) Compare(other version.ComparableVersion) (int, error) {
+	switch otherTyped := other.(type) {
+	case *OctopusVersion:
+		return o.CompareTo(otherTyped), nil
+	default:
+		return 0, fmt.Errorf("cannot compare OctopusVersion to %s", otherTyped)
+	}
+}
+
+func (o *OctopusVersion) CompareTo(other *OctopusVersion) int {
+	if majorCmp := cmp.Compare(o.Major, other.Major); majorCmp != 0 {
 		return majorCmp
 	}
-	if minorCmp := cmp.Compare(o.Minor, version.Minor); minorCmp != 0 {
+	if minorCmp := cmp.Compare(o.Minor, other.Minor); minorCmp != 0 {
 		return minorCmp
 	}
-	if patchCmp := cmp.Compare(o.Patch, version.Patch); patchCmp != 0 {
+	if patchCmp := cmp.Compare(o.Patch, other.Patch); patchCmp != 0 {
 		return patchCmp
 	}
-	if revisionCmp := cmp.Compare(o.Revision, version.Revision); revisionCmp != 0 {
+	if revisionCmp := cmp.Compare(o.Revision, other.Revision); revisionCmp != 0 {
 		return revisionCmp
 	}
 
 	// anything with a release field is lower than anything without a release field
-	if len(o.Release) > 0 && len(version.Release) == 0 {
+	if len(o.Release) > 0 && len(other.Release) == 0 {
 		return -1
 	}
-	if len(version.Release) > 0 && len(o.Release) == 0 {
+	if len(other.Release) > 0 && len(o.Release) == 0 {
 		return 1
 	}
 
-	releaseAlphaNum := util.GetAlphaNumericOnly(o.Release)
-	otherReleaseAlphaNum := util.GetAlphaNumericOnly(version.Release)
+	releaseAlphaNum := utils.GetAlphaNumericOnly(o.Release)
+	otherReleaseAlphaNum := utils.GetAlphaNumericOnly(other.Release)
 
-	//if the releases are different
+	// if the releases are different
 	if releaseAlphaNum != otherReleaseAlphaNum {
 		return compareReleaseLabels(
 			strings.FieldsFunc(releaseAlphaNum, splitter),
@@ -105,7 +118,7 @@ func compareRelease(v1 string, v2 string) int {
 	i1, err1 := strconv.Atoi(v1)
 	i2, err2 := strconv.Atoi(v2)
 
-	//if both numeric, compare as numeric
+	// if both numeric, compare as numeric
 	if err1 == nil && err2 == nil {
 		return cmp.Compare(i1, i2)
 	} else if err1 == nil || err2 == nil {
@@ -115,7 +128,6 @@ func compareRelease(v1 string, v2 string) int {
 		}
 
 		return 1
-
 	}
 
 	// Ignoring 2.0.0 case sensitive compare. Everything will be compared case insensitively as 2.0.1 specifies.
