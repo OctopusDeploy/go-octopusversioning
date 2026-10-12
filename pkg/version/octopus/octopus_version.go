@@ -45,7 +45,7 @@ func NewOctopusVersion(
 	}
 }
 
-func (o OctopusVersion) CompareTo(version OctopusVersion) int {
+func (o OctopusVersion) CompareTo(version *OctopusVersion) int {
 	if majorCmp := cmp.Compare(o.Major, version.Major); majorCmp != 0 {
 		return majorCmp
 	}
@@ -64,7 +64,7 @@ func (o OctopusVersion) CompareTo(version OctopusVersion) int {
 		return -1
 	}
 	if len(version.Release) > 0 && len(o.Release) == 0 {
-		return -1
+		return 1
 	}
 
 	releaseAlphaNum := util.GetAlphaNumericOnly(o.Release)

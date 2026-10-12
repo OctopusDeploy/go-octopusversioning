@@ -4,18 +4,18 @@ import (
 	"testing"
 )
 
-func TestSemverVersions(t *testing.T) {
+func TestOctopusVersionParsing(t *testing.T) {
 	tests := []struct {
-		name              string
-		version           string
-		major             int
-		minor             int
-		patch             int
-		revision          int
-		release           string
-		releasePrefix     string
-		releaseCounter    string
-		metadata          string
+		name           string
+		version        string
+		major          int
+		minor          int
+		patch          int
+		revision       int
+		release        string
+		releasePrefix  string
+		releaseCounter string
+		metadata       string
 	}{
 		{"0.0.4", "0.0.4", 0, 0, 4, 0, "", "", "", ""},
 		{"0.0.4.1", "0.0.4.1", 0, 0, 4, 1, "", "", "", ""},
