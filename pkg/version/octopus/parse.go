@@ -33,7 +33,7 @@ var expression = regexp.MustCompile(
 		// Get the revision version number, delimited by a period, comma, dash or underscore
 		fmt.Sprintf("(?:\\.\\s*(?<%s>\\d+)\\s*)?)?", groupRevision) +
 		// Everything after the last digit and before the plus is the prerelease
-		fmt.Sprintf("(?:[.\\-_\\\\])?(?<%s>(?<%s>[A-Za-z0-9]*?)([.\\-_\\\\](?<%s>[A-Za-z0-9.\\-_\\\\]*?)?)?)?", groupPrerelease, groupPrereleaseCounter, groupPrereleasePrefix) +
+		fmt.Sprintf("(?:[.\\-_\\\\])?(?<%s>(?<%s>[A-Za-z0-9]*?)([.\\-_\\\\](?<%s>[A-Za-z0-9.\\-_\\\\]*?)?)?)?", groupPrerelease, groupPrereleasePrefix, groupPrereleaseCounter) +
 		// The metadata is everything after the plus
 		fmt.Sprintf("(?:\\+(?<%s>[A-Za-z0-9_\\-.\\\\+]*?))?\\s*$", groupMetadata),
 )
