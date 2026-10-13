@@ -96,11 +96,11 @@ func (o *OctopusVersion) CompareTo(other *OctopusVersion) int {
 func compareReleaseLabels(v1 []string, v2 []string) int {
 	maxLen := max(len(v1), len(v2))
 	for i := range maxLen {
-		// v2 is longer
+		// v2 has an item, but v1 doesn't
 		if i >= len(v1) && i < len(v2) {
 			return -1
 		}
-		// v1 is longer
+		// v1 has an item, but v2 doesn't
 		if i < len(v1) && i >= len(v2) {
 			return 1
 		}
