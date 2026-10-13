@@ -2,11 +2,9 @@ package version
 
 import (
 	"cmp"
-	"fmt"
 	"strconv"
 	"strings"
 
-	"github.com/OctopusDeploy/go-octopusversioning/pkg/version"
 	utils "github.com/OctopusDeploy/go-octopusversioning/pkg/version/util"
 )
 
@@ -49,16 +47,7 @@ func NewOctopusVersion(
 	}
 }
 
-func (o *OctopusVersion) Compare(other version.ComparableVersion) (int, error) {
-	switch otherTyped := other.(type) {
-	case *OctopusVersion:
-		return o.CompareTo(otherTyped), nil
-	default:
-		return 0, fmt.Errorf("cannot compare OctopusVersion to %s", otherTyped)
-	}
-}
-
-func (o *OctopusVersion) CompareTo(other *OctopusVersion) int {
+func (o *OctopusVersion) Compare(other *OctopusVersion) int {
 	if majorCmp := cmp.Compare(o.Major, other.Major); majorCmp != 0 {
 		return majorCmp
 	}
