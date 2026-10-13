@@ -62,12 +62,27 @@ func ParseOctopusVersion(value string) (*OctopusVersion, error) {
 		}
 	}
 
+	var major, minor, patch, revision int
+	var err error
+	if major, err = getInt32FromMapOrDefault(mappedResult, groupMajor, 0); err != nil {
+		return nil, fmt.Errorf("failed to parse major version: %v", err)
+	}
+	if minor, err = getInt32FromMapOrDefault(mappedResult, groupMinor, 0); err != nil {
+		return nil, fmt.Errorf("failed to parse minor version: %v", err)
+	}
+	if patch, err = getInt32FromMapOrDefault(mappedResult, groupPatch, 0); err != nil {
+		return nil, fmt.Errorf("failed to parse patch version: %v", err)
+	}
+	if revision, err = getInt32FromMapOrDefault(mappedResult, groupRevision, 0); err != nil {
+		return nil, fmt.Errorf("failed to parse reversion: %v", err)
+	}
+
 	return NewOctopusVersion(
 			getStringFromMapOrDefault(mappedResult, groupPrefix, ""),
-			getIntFromMapOrDefault(mappedResult, groupMajor, 0),
-			getIntFromMapOrDefault(mappedResult, groupMinor, 0),
-			getIntFromMapOrDefault(mappedResult, groupPatch, 0),
-			getIntFromMapOrDefault(mappedResult, groupRevision, 0),
+			major,
+			minor,
+			patch,
+			revision,
 			getStringFromMapOrDefault(mappedResult, groupPrerelease, ""),
 			getStringFromMapOrDefault(mappedResult, groupPrereleasePrefix, ""),
 			getStringFromMapOrDefault(mappedResult, groupPrereleaseCounter, ""),
@@ -83,12 +98,15 @@ func getStringFromMapOrDefault(m map[string]string, key string, defaultValue str
 	return defaultValue
 }
 
-func getIntFromMapOrDefault(m map[string]string, key string, defaultValue int) int {
+func getInt32FromMapOrDefault(m map[string]string, key string, defaultValue int) (int, error) {
 	if val, ok := m[key]; ok {
-		i, err := strconv.Atoi(val)
+		// the C# only parses as an int32, so we do the same here.
+		i, err := strconv.ParseInt(val, 10, 32)
 		if err == nil {
-			return i
+			return int(i), nil
 		}
+		// we had an error
+		return 0, err
 	}
-	return defaultValue
+	return defaultValue, nil
 }

@@ -105,8 +105,10 @@ func compareReleaseLabels(v1 []string, v2 []string) int {
 }
 
 func compareRelease(v1 string, v2 string) int {
-	i1, err1 := strconv.Atoi(v1)
-	i2, err2 := strconv.Atoi(v2)
+	// C# int's are 32 bit, where as go is 64 bit.
+	// Parsing as 32 bit for consistency with C#
+	i1, err1 := strconv.ParseInt(v1, 10, 32)
+	i2, err2 := strconv.ParseInt(v2, 10, 32)
 
 	// if both numeric, compare as numeric
 	if err1 == nil && err2 == nil {
