@@ -118,7 +118,7 @@ func runTests(t *testing.T, tests []VersionTest) {
 				t.Fatalf("ParseOctopusVersion(%q) failed: %v", tt.v2, err)
 			}
 
-			result := version.Compare(parsedV1, parsedV2)
+			result := version.Compare(parsedV1, parsedV2, (*OctopusVersion).Compare)
 
 			if result != tt.expectedResult {
 				t.Errorf("CompareTo(%q, %q) = %d, want %d", tt.v1, tt.v2, result, tt.expectedResult)

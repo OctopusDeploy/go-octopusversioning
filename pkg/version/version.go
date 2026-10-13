@@ -1,9 +1,7 @@
 package version
 
-type ComparableVersion[T any] interface {
-	Compare(T) int
-}
+type Comparator[A, B any] func(A, B) int
 
-func Compare[T ComparableVersion[T]](v1, v2 T) int {
-	return v1.Compare(v2)
+func Compare[A, B any](v1 A, v2 B, compare Comparator[A, B]) int {
+	return compare(v1, v2)
 }
