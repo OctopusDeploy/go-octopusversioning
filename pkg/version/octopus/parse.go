@@ -50,7 +50,7 @@ func ParseOctopusVersion(value string) (*OctopusVersion, error) {
 
 	noSpaces := strings.Replace(value, " ", "", -1)
 
-	regexResult := expression.FindStringSubmatch(noSpaces)
+	regexResult := expression.FindStringSubmatch(value)
 
 	if regexResult == nil {
 		return nil, errors.New("the supplied version was not valid")
