@@ -75,8 +75,9 @@ func (o *OctopusVersion) Compare(other *OctopusVersion) int {
 	// if the releases are different
 	if releaseAlphaNum != otherReleaseAlphaNum {
 		return compareReleaseLabels(
-			strings.FieldsFunc(releaseAlphaNum, splitter),
-			strings.FieldsFunc(otherReleaseAlphaNum, splitter))
+			// we can split on -, because we have normalized it in GetAlphaNumericOnly
+			strings.Split(releaseAlphaNum, "-"),
+			strings.Split(otherReleaseAlphaNum, "-"))
 	}
 
 	return 0
@@ -121,8 +122,4 @@ func compareRelease(v1 string, v2 string) int {
 
 	// Ignoring 2.0.0 case sensitive compare. Everything will be compared case insensitively as 2.0.1 specifies.
 	return strings.Compare(strings.ToLower(v1), strings.ToLower(v2))
-}
-
-func splitter(r rune) bool {
-	return r == '-' || r == '_' || r == '.'
 }
