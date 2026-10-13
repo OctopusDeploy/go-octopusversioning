@@ -74,7 +74,7 @@ func ParseOctopusVersion(value string) (*OctopusVersion, error) {
 		return nil, fmt.Errorf("failed to parse patch version: %v", err)
 	}
 	if revision, err = getInt32FromMapOrDefault(mappedResult, groupRevision, 0); err != nil {
-		return nil, fmt.Errorf("failed to parse reversion: %v", err)
+		return nil, fmt.Errorf("failed to parse revision: %v", err)
 	}
 
 	return NewOctopusVersion(
@@ -99,7 +99,7 @@ func getStringFromMapOrDefault(m map[string]string, key string, defaultValue str
 }
 
 func getInt32FromMapOrDefault(m map[string]string, key string, defaultValue int) (int, error) {
-	if val, ok := m[key]; ok {
+	if val, ok := m[key]; ok && val != "" {
 		// the C# only parses as an int32, so we do the same here.
 		i, err := strconv.ParseInt(val, 10, 32)
 		if err == nil {
