@@ -1,4 +1,4 @@
-﻿package version
+package version
 
 type ComparableVersion interface {
 	Compare(ComparableVersion) (int, error)
