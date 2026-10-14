@@ -1,0 +1,10 @@
+﻿{
+  "packages": {
+    ".": {
+      "changelog-path": "CHANGELOG.md",
+      "bump-minor-pre-major": true,
+      "release-type": "go",
+      "versioning": "default"
+    }
+  }
+}
