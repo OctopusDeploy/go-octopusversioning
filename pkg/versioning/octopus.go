@@ -1,11 +1,9 @@
-package version
+package versioning
 
 import (
 	"cmp"
 	"strconv"
 	"strings"
-
-	utils "github.com/OctopusDeploy/go-octopusversioning/pkg/version/util"
 )
 
 type OctopusVersion struct {
@@ -69,8 +67,8 @@ func (o *OctopusVersion) Compare(other *OctopusVersion) int {
 		return 1
 	}
 
-	releaseAlphaNum := utils.GetAlphaNumericOnly(o.Release)
-	otherReleaseAlphaNum := utils.GetAlphaNumericOnly(other.Release)
+	releaseAlphaNum := GetAlphaNumericOnly(o.Release)
+	otherReleaseAlphaNum := GetAlphaNumericOnly(other.Release)
 
 	// if the releases are different
 	if releaseAlphaNum != otherReleaseAlphaNum {

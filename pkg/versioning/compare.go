@@ -1,4 +1,4 @@
-package version
+package versioning
 
 type Comparator[A, B any] func(A, B) int
 
