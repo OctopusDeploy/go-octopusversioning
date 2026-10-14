@@ -48,7 +48,7 @@ func ParseOctopusVersion(value string) (*OctopusVersion, error) {
 		return nil, errors.New("the version cannot be an empty string")
 	}
 
-	noSpaces := strings.Replace(value, " ", "", -1)
+	noSpaces := strings.ReplaceAll(value, " ", "")
 
 	regexResult := expression.FindStringSubmatch(value)
 
