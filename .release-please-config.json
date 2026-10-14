@@ -1,11 +1,11 @@
 ﻿{
   "packages": {
     ".": {
-      "pull-request-title-pattern": "feat${scope}: release${component} ${version}",
+      "pull-request-title-pattern": "feat${scope}: release ${version}",
       "changelog-path": "CHANGELOG.md",
       "bump-minor-pre-major": true,
       "release-type": "go",
-      "versioning": "default",
+      "versioning": "default"
     }
   }
 }
