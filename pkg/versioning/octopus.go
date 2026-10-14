@@ -1,0 +1,125 @@
+package versioning
+
+import (
+	"cmp"
+	"strconv"
+	"strings"
+)
+
+type OctopusVersion struct {
+	Prefix         string
+	Major          int
+	Minor          int
+	Patch          int
+	Revision       int
+	Release        string
+	ReleasePrefix  string
+	ReleaseCounter string
+	Metadata       string
+	OriginalString string
+}
+
+func NewOctopusVersion(
+	prefix string,
+	major int,
+	minor int,
+	patch int,
+	revision int,
+	release string,
+	releasePrefix string,
+	releaseCounter string,
+	metadata string,
+	originalString string,
+) *OctopusVersion {
+	return &OctopusVersion{
+		Prefix:         prefix,
+		Major:          major,
+		Minor:          minor,
+		Patch:          patch,
+		Revision:       revision,
+		Release:        release,
+		ReleasePrefix:  releasePrefix,
+		ReleaseCounter: releaseCounter,
+		Metadata:       metadata,
+		OriginalString: originalString,
+	}
+}
+
+func (o *OctopusVersion) Compare(other *OctopusVersion) int {
+	if majorCmp := cmp.Compare(o.Major, other.Major); majorCmp != 0 {
+		return majorCmp
+	}
+	if minorCmp := cmp.Compare(o.Minor, other.Minor); minorCmp != 0 {
+		return minorCmp
+	}
+	if patchCmp := cmp.Compare(o.Patch, other.Patch); patchCmp != 0 {
+		return patchCmp
+	}
+	if revisionCmp := cmp.Compare(o.Revision, other.Revision); revisionCmp != 0 {
+		return revisionCmp
+	}
+
+	// anything with a release field is lower than anything without a release field
+	if len(o.Release) > 0 && len(other.Release) == 0 {
+		return -1
+	}
+	if len(other.Release) > 0 && len(o.Release) == 0 {
+		return 1
+	}
+
+	releaseAlphaNum := GetAlphaNumericOnly(o.Release)
+	otherReleaseAlphaNum := GetAlphaNumericOnly(other.Release)
+
+	// if the releases are different
+	if releaseAlphaNum != otherReleaseAlphaNum {
+		return compareReleaseLabels(
+			// we can split on -, because we have normalized it in GetAlphaNumericOnly
+			strings.Split(releaseAlphaNum, "-"),
+			strings.Split(otherReleaseAlphaNum, "-"))
+	}
+
+	return 0
+}
+
+func compareReleaseLabels(v1 []string, v2 []string) int {
+	maxLen := max(len(v1), len(v2))
+	for i := range maxLen {
+		// v2 has an item, but v1 doesn't
+		if i >= len(v1) && i < len(v2) {
+			return -1
+		}
+		// v1 has an item, but v2 doesn't
+		if i < len(v1) && i >= len(v2) {
+			return 1
+		}
+
+		result := compareRelease(v1[i], v2[i])
+
+		if result != 0 {
+			return result
+		}
+	}
+	return 0
+}
+
+func compareRelease(v1 string, v2 string) int {
+	// C# int's are 32 bit, where as go is 64 bit.
+	// Parsing as 32 bit for consistency with C#
+	i1, err1 := strconv.ParseInt(v1, 10, 32)
+	i2, err2 := strconv.ParseInt(v2, 10, 32)
+
+	// if both numeric, compare as numeric
+	if err1 == nil && err2 == nil {
+		return cmp.Compare(i1, i2)
+	} else if err1 == nil || err2 == nil {
+		// numeric labels come before alpha labels
+		if err1 == nil {
+			return -1
+		}
+
+		return 1
+	}
+
+	// Ignoring 2.0.0 case sensitive compare. Everything will be compared case insensitively as 2.0.1 specifies.
+	return strings.Compare(strings.ToLower(v1), strings.ToLower(v2))
+}
